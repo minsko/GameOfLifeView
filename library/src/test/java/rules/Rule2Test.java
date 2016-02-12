@@ -15,7 +15,7 @@ public class Rule2Test extends TestCase {
 
     @Test
     public void testCellsWith2LiveNeighboursWillLive() {
-        World world = new World(3,3);
+        World world = World.genesis(3,3);
 
         world.kill(0,2);
         world.kill(1,2);
@@ -31,7 +31,7 @@ public class Rule2Test extends TestCase {
 
     @Test
     public void testCellsWith3LiveNeighboursWillLive() {
-        World world = new World(3,3);
+        World world = World.genesis(3,3);
 
         world.kill(1,1);
         world.kill(2,1);

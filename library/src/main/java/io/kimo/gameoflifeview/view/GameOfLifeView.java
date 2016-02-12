@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -28,10 +29,13 @@ public class GameOfLifeView extends SurfaceView implements Runnable {
     private Thread thread;
     private boolean isRunning = false;
 
+
     private int columnWidth = 1;
     private int rowHeight = 1;
     private int numberOfColumns = 1;
     private int numberOfRows = 1;
+    private long rotations=0;
+    private long startTime=0;
 
     private World world;
 
@@ -71,6 +75,17 @@ public class GameOfLifeView extends SurfaceView implements Runnable {
 
             Canvas canvas = getHolder().lockCanvas();
             world.rotate();
+            if (++rotations > 100l) {
+                rotations = 0;
+                final String msg = String.format("100 in %.2f", ((System.currentTimeMillis()-startTime)/1000f));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("Rotations", msg);
+                    }
+                }).start();
+                startTime = System.currentTimeMillis();
+            }
             getHolder().unlockCanvasAndPost(drawCells(canvas));
         }
     }
@@ -79,6 +94,7 @@ public class GameOfLifeView extends SurfaceView implements Runnable {
         thread = null;
         isRunning = true;
         thread = new Thread(this);
+        startTime = System.currentTimeMillis();
         thread.start();
     }
 
@@ -157,7 +173,7 @@ public class GameOfLifeView extends SurfaceView implements Runnable {
         columnWidth = point.x / numberOfColumns;
         rowHeight = point.y / numberOfRows;
 
-        world = new World(numberOfColumns, numberOfRows, true);
+        world = new World(numberOfColumns, numberOfRows, false);
     }
 
     private Canvas drawCells(Canvas canvas) {

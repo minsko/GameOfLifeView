@@ -11,13 +11,13 @@ public class World {
     private int width,height;
     private Cell[] cells;
     private Cell[][] board;
+    private final Random rand;
 
-    public World(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.cells = new Cell[this.width*this.height];
-        this.board = new Cell[this.width][this.height];
-        setup(false);
+
+    public static World genesis(int width, int height) {
+        World w = new World(width, height, false);
+        w.genesis();
+        return w;
     }
 
     public World(int width, int height, boolean random) {
@@ -25,7 +25,11 @@ public class World {
         this.height = height;
         this.cells = new Cell[this.width*this.height];
         this.board = new Cell[this.width][this.height];
-        setup(random);
+        if (random)
+            this.rand = new Random();
+        else
+            this.rand = new Random(110100);
+        setup();
     }
 
     public int getWidth() {return this.width;}
@@ -33,13 +37,10 @@ public class World {
     public Cell[] getCells() {return this.cells;}
     public Cell[][] getBoard() {return this.board;}
 
-    private void setup(boolean random) {
+    private void setup() {
         for(int i = 0; i < this.width; i++)
             for(int j = 0; j < this.height; j++)
-                if(random)
-                    this.board[i][j] = new Cell(i,j,new Random().nextBoolean());
-                else
-                    this.board[i][j] = new Cell(i,j);
+                this.board[i][j] = new Cell(i,j,this.rand.nextBoolean());
 
         updateCells();
     }
@@ -52,6 +53,12 @@ public class World {
                 boardCells.add(this.board[i][j]);
 
         this.cells = boardCells.toArray(new Cell[this.width*this.height]);
+    }
+
+    private void genesis() {
+        for(int i = 0; i < this.width; i++)
+            for(int j = 0; j < this.height; j++)
+                revive(i, j);
     }
 
     public Cell get(int i, int j) {

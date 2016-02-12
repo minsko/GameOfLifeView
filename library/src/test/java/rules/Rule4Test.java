@@ -15,7 +15,7 @@ public class Rule4Test extends TestCase {
 
     @Test
     public void testDeadCellsWith3LiveNeighboursWillRevive() {
-        World world = new World(3,3);
+        World world = World.genesis(3,3);
 
         world.kill(1, 2);
         world.kill(2, 2);
